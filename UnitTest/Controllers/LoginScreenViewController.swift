@@ -1,5 +1,5 @@
 //
-//  ViewController.swift
+//  LoginScreenViewController.swift
 //  UnitTest
 //
 //  Created by Sachin Panigrahi on 17/05/19.
@@ -8,13 +8,10 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+class LoginScreenViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+
     }
-
-
 }
-
