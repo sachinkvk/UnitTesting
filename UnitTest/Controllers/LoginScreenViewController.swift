@@ -82,6 +82,12 @@ class LoginScreenViewController: UIViewController {
         return view
     }()
     
+    let demoTableView : UITableView = {
+        let table = UITableView()
+        table.translatesAutoresizingMaskIntoConstraints = false
+        return table
+    }()
+    
     let clickMeButtom : UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -120,6 +126,8 @@ class LoginScreenViewController: UIViewController {
         return button
     }()
     
+    var isOpen = false
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
@@ -127,55 +135,60 @@ class LoginScreenViewController: UIViewController {
         simpleText = BaseLabel(frame: CGRect(x: 0, y: 0, width: 20, height: 20))
 //        view.addSubview(simpleText)
         view.addSubview(clickMeButtom)
-        view.addSubview(clickMeButtom1)
-        view.addSubview(clickMeButtom2)
-
+//        view.addSubview(clickMeButtom1)
+//        view.addSubview(clickMeButtom2)
+        
 //        view.addSubview(fn)
-//
+        
 //        view.addSubview(lbl)
         
 //        view.addSubview(firstView)
 //        view.addSubview(secondView)
 //        view.addSubview(thirdView)
-        
-        
-//        firstView.setAnchors(top: self.view.topAnchor, bottom: self.view.bottomAnchor, leading: self.view.leadingAnchor, trailing: self.view.trailingAnchor, constant: UIEdgeInsets.init(top: 20, left: 20, bottom: -20, right: -20))
+
+//        firstView.setAnchors(top: self.view.topAnchor, bottom: nil, leading: self.view.leadingAnchor, trailing: self.view.trailingAnchor, constant: UIEdgeInsets.init(top: 20, left: 20, bottom: -20, right: -20))
 //        firstView.setAnchorSize(size: CGSize.init(width: 0, height: 200))
-        
-//        secondView.setAnchors(top: self.firstView.topAnchor, bottom: nil, leading: self.view.leadingAnchor, trailing: self.view.trailingAnchor, constant: UIEdgeInsets.init(top: 20, left: 20, bottom: 0, right: 20))
+//
+//        secondView.setAnchors(top: self.firstView.bottomAnchor, bottom: nil, leading: self.view.leadingAnchor, trailing: self.view.trailingAnchor, constant: UIEdgeInsets.init(top: 20, left: 20, bottom: 0, right: -20))
 //        secondView.setAnchorSize(size: CGSize.init(width: 0, height: 200))
 //
-//        firstView.backgroundColor = .red
-//
-//        thirdView.setAnchors(top: self.secondView.topAnchor, bottom: nil, leading: self.view.leadingAnchor, trailing: self.view.trailingAnchor, constant: UIEdgeInsets.init(top: 20, left: 20, bottom: 0, right: 20))
+//        thirdView.setAnchors(top: self.secondView.bottomAnchor, bottom: nil, leading: self.view.leadingAnchor, trailing: self.view.trailingAnchor, constant: UIEdgeInsets.init(top: 20, left: 20, bottom: 0, right: -20))
 //        thirdView.setAnchorSize(size: CGSize.init(width: 0, height: 200))
         
 //        lbl.setAnchorPosition(horizontal: view.centerXAnchor, vertical: view.centerYAnchor)
+////        fn.setAnchors(top: clickMeButtom.bottomAnchor, bottom: nil, leading: view.leadingAnchor, trailing: view.trailingAnchor, constant: UIEdgeInsets.init(top: 20, left: 40, bottom: 0, right: -40))
+
         clickMeButtom.setAnchors(top: view.topAnchor, bottom: nil, leading: view.leadingAnchor, trailing: view.trailingAnchor, constant: UIEdgeInsets.init(top: 100, left: 20, bottom: 0, right: -20))
-//        fn.setAnchors(top: clickMeButtom.bottomAnchor, bottom: nil, leading: view.leadingAnchor, trailing: view.trailingAnchor, constant: UIEdgeInsets.init(top: 20, left: 40, bottom: 0, right: -40))
 
         clickMeButtom.setAnchorSize(size: CGSize.init(width: 0, height: 150))
-        
-        clickMeButtom1.setAnchors(top: clickMeButtom.bottomAnchor, bottom: nil, leading: view.leadingAnchor, trailing: view.trailingAnchor, constant: UIEdgeInsets.init(top: 10, left: 20, bottom: 0, right: -100))
-        clickMeButtom1.setAnchorSize(size: CGSize.init(width: 0, height: 150))
 
-        clickMeButtom2.setAnchors(top: clickMeButtom1.bottomAnchor, bottom: nil, leading: view.leadingAnchor, trailing: view.trailingAnchor, constant: UIEdgeInsets.init(top: 10, left: 20, bottom: 0, right: -20))
-        clickMeButtom2.setAnchorSize(size: CGSize.init(width: 0, height: 180))
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(true)
-//        startAnimation()
+//        clickMeButtom1.setAnchors(top: clickMeButtom.bottomAnchor, bottom: nil, leading: view.leadingAnchor, trailing: view.trailingAnchor, constant: UIEdgeInsets.init(top: 10, left: 20, bottom: 0, right: -100))
+//        clickMeButtom1.setAnchorSize(size: CGSize.init(width: 0, height: 150))
+
+//        clickMeButtom2.setAnchors(top: clickMeButtom1.bottomAnchor, bottom: nil, leading: view.leadingAnchor, trailing: view.trailingAnchor, constant: UIEdgeInsets.init(top: 10, left: 20, bottom: 0, right: -20))
+//        clickMeButtom2.setAnchorSize(size: CGSize.init(width: 0, height: 180))
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(true)
-        startAnimation(self.view)
+//        startAnimation(self.view)
     }
     
     @objc func handleClick() {
-//        startAnimation()
+        if isOpen {
+            self.isOpen = false
+            self.clickMeButtom.backgroundColor = .lightGray
+            UIView.transition(with: self.clickMeButtom, duration: 1, options: .transitionFlipFromLeft, animations: nil, completion: nil)
+//            UIView.transition(from: self.clickMeButtom, to: self.clickMeButtom, duration: 1, options: [.showHideTransitionViews,.transitionFlipFromLeft], completion: nil)
+        } else {
+            self.isOpen = true
+                        UIView.transition(with: self.clickMeButtom, duration: 1, options: .transitionFlipFromRight, animations: nil, completion: nil)
+            
+//            UIView.transition(from: self.clickMeButtom, to: self.clickMeButtom, duration: 1, options: [.showHideTransitionViews,.transitionFlipFromRight], completion: nil)
+            self.clickMeButtom.backgroundColor = .cyan
+        }
         
+//        startAnimation(self.view)
     }
 }
 
