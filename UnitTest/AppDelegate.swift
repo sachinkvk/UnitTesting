@@ -18,10 +18,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         navigationController.isNavigationBarHidden = false
         navigationController.navigationBar.topItem?.title = "Home"
-        navigationController.setViewControllers([LoginScreenViewController()], animated: true)
+        navigationController.setViewControllers([MockViewController()], animated: true)
         window?.rootViewController = navigationController
         window?.makeKeyAndVisible()
-        // Override point for customization after application launch.
+        
         return true
     }
 

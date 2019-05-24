@@ -11,44 +11,94 @@ import XCTest
 
 class UnitTestTests: XCTestCase {
     
-    var vc = LoginScreenViewController()
+//    var vc = LoginScreenViewController()
+    var sut : TestViewController!
     
     override func setUp() {
-//        _ = vc.view
-//        vc.loadView()
-    }
-    
-    override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-    }
-    
-    class FakeAlert : UIAlertAction {
-//        var alertTitle : String?
-//        var alertStyle : UIAlertAction.Style?
-//        var alertHandler : (UIAlertAction)->(Void)?
-//
-//        convenience init(title: String?, handler: ((UIAlertAction) -> Void)?, preferredStyle: UIAlertController.Style = .alert) {
-//            self.init()
-//            self.alertTitle = title
-//            self.alertHandler = handler!
-//        }
-//
-//        override init() {
-//            self.alertStyle = UIAlertAction.Style.default
-//            super.init()
-//        }
-//
-//        required init?(coder aDecoder: NSCoder) {
-//            fatalError("init(coder:) has not been implemented")
-//        }
-    }
-    
-    func testLoginScreenClickMeButton() {
-        XCTAssertNotNil(vc)
-        let button = vc.clickMeButtom
-        XCTAssertNotNil(button)
-        var msgStr = ""
-        vc.handleClick()
         
+        let storyboard = UIStoryboard(name: "Test", bundle: nil)
+        sut = storyboard.instantiateViewController(withIdentifier: "TestViewController") as? TestViewController
+        _ = sut.view
     }
+    
+    func testVCObj() {
+        XCTAssertNotNil(sut)
+    }
+    
+    func testTable() {
+        XCTAssertNotNil(sut.myTableView)
+    }
+    
+    func testTableViewAppear() {
+        XCTAssertEqual(sut.myTableView.isHidden,false)
+    }
+    
+    func testTableWithZeroRows(){
+        sut.dataSource = []
+        
+        XCTAssertEqual(sut.myTableView.numberOfRows(inSection: 0), 0)
+    }
+    
+    func testTableViewRowsCount(){
+        let source = ["A","B"]
+        sut.dataSource = source
+        sut.myTableView.reloadData()
+        XCTAssertEqual(sut.myTableView.numberOfRows(inSection: 0), 2)
+    }
+    
+    func testTableViewCell() {
+        let source = ["A","B","C","D","A","B","C","D","A","B","C","D"]
+        sut.dataSource = source
+        sut.myTableView.reloadData()
+        var ctr = 0
+        sut.dataSource.forEach { (value) in
+            let cell = sut.myTableView.dataSource?.tableView(sut.myTableView, cellForRowAt: IndexPath(row: ctr, section: 0))
+            XCTAssertEqual(cell?.textLabel?.text, value)
+            ctr += 1
+        }
+    }
+    
+    func testTableViewDidTap() {
+        let source = ["A","B","C","D","A","B","C","D","A","B","C","D"]
+        sut.dataSource = source
+        sut.myTableView.reloadData()
+        sut.myTableView.selectRow(at: IndexPath(row: 0, section: 0), animated: true, scrollPosition: .none)
+        let indexPath = sut.myTableView.indexPathForSelectedRow
+        XCTAssertEqual(source[(indexPath?.row)!], "A")
+    }
+    
+    func testForNoRecord() {
+        let source = ["A","B","C","D","A","B","C","D","A","B","C","D"]
+        sut.dataSource = source
+        sut.loadData()
+        XCTAssertEqual(sut.noDataLabel.isHidden, true)
+        
+        sut.dataSource = []
+        sut.loadData()
+        XCTAssertEqual(sut.noDataLabel.isHidden, false)
+    }
+    
+    func testMockViewController() {
+        let sut = MockViewController(dataSource: [])
+        _ = sut.view
+        
+        XCTAssertNotNil(sut)
+    }
+    
+    func testTableView() {
+        let sut = MockViewController(dataSource: ["A","B","C","D","A","B","C","D","A","B","C","D"])
+        _ = sut.view
+        var ctr = 0
+        sut.dataSource.forEach { (value) in
+            let cell = sut.myTableView.dataSource?.tableView(sut.myTableView, cellForRowAt: IndexPath(row: ctr, section: 0))
+            XCTAssertEqual(cell?.textLabel?.text, value)
+            ctr += 1
+        }
+    }
+    
+    
+//    func makeTestVC(_ dataSource : [String]) -> TestViewController {
+//
+//    }
+
 }
