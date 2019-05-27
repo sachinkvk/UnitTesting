@@ -130,6 +130,18 @@ class LoginScreenViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        let vm = SamppleViewModel()
+        print(vm.params)
+        
+        vm.fetchList { [weak self] (result) in
+            switch result {
+            case .success(let assignments) :
+                print(assignments)
+            case .failure(let err):
+                print(err)
+            }
+        }
+        
         view.backgroundColor = .white
         
         simpleText = BaseLabel(frame: CGRect(x: 0, y: 0, width: 20, height: 20))
