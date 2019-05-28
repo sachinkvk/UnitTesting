@@ -8,21 +8,23 @@
 
 import Foundation
 
-class SamppleViewModel : ApiRequest{
+class SamppleViewModel : ApiResource{
     
     func fetchList(completion : @escaping (Result<Decodable,ServiceErrorCode>) -> ()) {
-        WebService.sharedInstance.fetch(with: request, decodingType: [VideoAssignment].self) { (video, code) in
-            if video == nil {
+        WebService.sharedInstance.fetch(with: request, decodingType: [VideoAssignment].self) { [](video, code) in
+            
+            guard let video = video else {
                 completion(Result.failure(code!))
+                return
+                
             }
-            else {
-                completion(Result.success(video!))
-            }
+            
+            completion(Result.success(video))
         }
     }
 }
 
-extension SamppleViewModel {
+extension SamppleViewModel:HttpHeaders {
     
     var path: String {
         return "/tenovideo/videos/myvideos-assignment"
@@ -34,14 +36,13 @@ extension SamppleViewModel {
                 ]
     }
         
-    var httpMethod: HttpType {
+    var method: HttpType {
         return .get
     }
     
-    var headers: [String : String] {
+    var userSpecificHeaders: [String : String] {
         var header = [String : String]()
         header = ["access-key" : "11654" , "access-token" : "e9bbdf29-7a64-498d-9439-aedfe2eb63ee"]
-        header += setHeaders()
         return header
     }
 }

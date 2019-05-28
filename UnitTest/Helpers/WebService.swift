@@ -125,48 +125,12 @@ enum HttpType: String {
     case delete  = "DELETE"
 }
 
-protocol ApiRequest {
-    var path : String { get }
-    var httpMethod : HttpType { get }
-    var headers : [String : String] { get }
-    var params : [String : Any] { get }
+protocol HttpHeaders {
+    var userSpecificHeaders : [ String: String] { get }
 }
 
-extension ApiRequest {
-    
-    var baseUrl : String {
-        return "http://sandbox.tenoapp.com:7078/tenovideo"
-    }
-    
-    var urlComponents: URLComponents {
-        var components = URLComponents(string: baseUrl)!
-        components.path = path
-        if httpMethod == HttpType.get {
-            var query = [URLQueryItem]()
-            params.forEach { (arg) in
-                let (k, v) = arg
-                query.append(URLQueryItem(name: k, value: "\(v)"))
-            }
-            components.queryItems = query
-        }
-        return components
-    }
-    
-    var request: URLRequest {
-        var request = URLRequest(url: urlComponents.url!)
-        if httpMethod == HttpType.post {
-            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-            let data = try? JSONSerialization.data(withJSONObject: params, options: [])
-            request.httpBody = data
-        }
-        request.allHTTPHeaderFields = headers
-        request.httpMethod = httpMethod.rawValue
-        return request
-    }
-}
-
-extension ApiRequest {
-    func setHeaders() -> [String : String] {
+extension HttpHeaders {
+    private func setDefaultHeaders() -> [String : String] {
         var param = [String : String]()
         param["userId"] = "11654"
         param["x-device-model"] = ""
@@ -176,6 +140,51 @@ extension ApiRequest {
         param["x-app-version-name"] = version
         //        params["x-app-version-code"] = String(describing: myDict["currentVersion"]!)
         return param
+    }
+    
+    var headers : [String : String ] {
+        var header  = userSpecificHeaders
+        header += setDefaultHeaders()
+        return header
+    }
+}
+
+protocol ApiResource : HttpHeaders {
+    var path : String { get }
+    var method : HttpType { get }
+    var params : [String : Any] { get }
+}
+
+extension ApiResource {
+    
+    private var baseUrl : String {
+        return "http://sandbox.tenoapp.com:7078/tenovideo"
+    }
+    
+    private var urlComponents: URLComponents {
+        var components = URLComponents(string: baseUrl)!
+        components.path = path
+        if method == HttpType.get {
+            var query = [URLQueryItem]()
+            params.forEach { (param) in
+                let (k, v) = param
+                query.append(URLQueryItem(name: k, value: "\(v)"))
+            }
+            components.queryItems = query
+        }
+        return components
+    }
+    
+    var request: URLRequest {
+        var request = URLRequest(url: urlComponents.url!)
+        if method == HttpType.post {
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            let data = try? JSONSerialization.data(withJSONObject: params, options: [])
+            request.httpBody = data
+        }
+        request.allHTTPHeaderFields = headers
+        request.httpMethod = method.rawValue
+        return request
     }
 }
 
