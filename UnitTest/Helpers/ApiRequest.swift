@@ -27,8 +27,9 @@ protocol HttpHeaders {
 }
 
 extension RequestsTypes : ApiResource{
+    
     private var baseUrl : String {
-        return "http://sandbox.tenoapp.com:707"
+        return "http://sandbox.tenoapp.com"
     }
     
     var method: HttpType {
@@ -43,7 +44,8 @@ extension RequestsTypes : ApiResource{
     var path : String {
         switch self {
         case .assignment( _ ,  _):
-            return "/tenovideo/videos/myvideos-assignment"
+//            return "/videos/myvideos"
+            return "/worksheets/search"
             
         default:
             return ""
@@ -55,13 +57,12 @@ extension RequestsTypes : ApiResource{
         case .login:
             return ["":""]
         case .assignment(let pageNo , let size):
-            return ["page" : pageNo,"size" : size]
+//            return ["page" : pageNo,"size" : size]
+            return ["text" : "Algebra","page":pageNo,"size" : size,"standard" : ["6","8"],"subject" : "Mathematics","board":"CBSE","lite":"1"]
         default:
             return ["":""]
         }
     }
-    
-    
     
     private var urlComponents: URLComponents {
         var components = URLComponents(string: baseUrl)!
@@ -70,11 +71,18 @@ extension RequestsTypes : ApiResource{
             var query = [URLQueryItem]()
             params.forEach { (param) in
                 let (k, v) = param
-                query.append(URLQueryItem(name: k, value: "\(v)"))
+                if let arr = v as? Array<String> {
+                    print(k)
+                    arr.forEach({ (val) in
+                        query.append(URLQueryItem(name: k, value: val))
+                    })
+                }
+                else {
+                    query.append(URLQueryItem(name: k, value: "\(v)"))
+                }
             }
             components.queryItems = query
         }
-        //url encoding
         return components
     }
     
@@ -84,7 +92,6 @@ extension RequestsTypes : ApiResource{
             request.setValue("application/json", forHTTPHeaderField: "Content-Type")
             let data = try? JSONSerialization.data(withJSONObject: params, options: [])
             request.httpBody = data
-            
         }
         request.allHTTPHeaderFields = headers
         request.httpMethod = method.rawValue
@@ -95,13 +102,13 @@ extension RequestsTypes : ApiResource{
 extension RequestsTypes : HttpHeaders {
     var userSpecificHeaders: [String : String] {
         var header = [String : String]()
-        header = ["access-key" : "11654" , "access-token" : "e9bbdf29-7a64-498d-9439-aedfe2eb63ee"]
+        header = ["access-key" : "12018" , "access-token" : "6a108135-ca19-4d20-a8f7-28f16b507744"]
         return header
     }
     
     private func setDefaultHeaders() -> [String : String] {
         var param = [String : String]()
-        param["userId"] = "11654"
+        param["userId"] = "12018"
         param["x-device-model"] = ""
         param["x-source"] = "ios"
         param["x-os-version"] = ProcessInfo.processInfo.operatingSystemVersionString

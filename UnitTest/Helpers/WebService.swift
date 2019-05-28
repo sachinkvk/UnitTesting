@@ -68,6 +68,7 @@ enum ServiceErrorCode : Int {
     case SERVER_ERROR = -3
     case NO_RESOURCEDATA = 404
     case SERVICE_UNAVAILABLE = 503
+    case METHOD_NOT_FOUND = 405
     
     var description: String?{
         
@@ -98,6 +99,8 @@ enum ServiceErrorCode : Int {
             return "Duplicate data(Already posted)"
         case .SERVICE_UNAVAILABLE:
             return "Service is unavailable"
+        case .METHOD_NOT_FOUND :
+            return "method not found"
         }
     }
 }
