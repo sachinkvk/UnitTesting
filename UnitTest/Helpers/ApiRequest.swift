@@ -28,7 +28,7 @@ protocol HttpHeaders {
 
 extension RequestsTypes : ApiResource{
     private var baseUrl : String {
-        return "http://sandbox.tenoapp.com:7078/tenovideo"
+        return "http://sandbox.tenoapp.com:707"
     }
     
     var method: HttpType {
@@ -60,6 +60,8 @@ extension RequestsTypes : ApiResource{
             return ["":""]
         }
     }
+    
+    
     
     private var urlComponents: URLComponents {
         var components = URLComponents(string: baseUrl)!
