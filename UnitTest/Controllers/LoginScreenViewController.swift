@@ -131,7 +131,6 @@ class LoginScreenViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         let vm = SamppleViewModel()
-        print(vm.params)
         
         vm.fetchList { [weak self] (result) in
             switch result {

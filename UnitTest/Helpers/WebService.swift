@@ -125,135 +125,14 @@ enum HttpType: String {
     case delete  = "DELETE"
 }
 
-protocol HttpHeaders {
-    var userSpecificHeaders : [ String: String] { get }
-}
-
-extension HttpHeaders {
-    private func setDefaultHeaders() -> [String : String] {
-        var param = [String : String]()
-        param["userId"] = "11654"
-        param["x-device-model"] = ""
-        param["x-source"] = "ios"
-        param["x-os-version"] = ProcessInfo.processInfo.operatingSystemVersionString
-        let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as! String
-        param["x-app-version-name"] = version
-        //        params["x-app-version-code"] = String(describing: myDict["currentVersion"]!)
-        return param
-    }
-    
-    var headers : [String : String ] {
-        var header  = userSpecificHeaders
-        header += setDefaultHeaders()
-        return header
-    }
-}
-
-protocol ApiResource : HttpHeaders {
-    var path : String { get }
-    var method : HttpType { get }
-    var params : [String : Any] { get }
-}
-
-extension ApiResource {
-    
-    private var baseUrl : String {
-        return "http://sandbox.tenoapp.com:7078/tenovideo"
-    }
-    
-    private var urlComponents: URLComponents {
-        var components = URLComponents(string: baseUrl)!
-        components.path = path
-        if method == HttpType.get {
-            var query = [URLQueryItem]()
-            params.forEach { (param) in
-                let (k, v) = param
-                query.append(URLQueryItem(name: k, value: "\(v)"))
-            }
-            components.queryItems = query
-        }
-        return components
-    }
-    
-    var request: URLRequest {
-        var request = URLRequest(url: urlComponents.url!)
-        if method == HttpType.post {
-            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-            let data = try? JSONSerialization.data(withJSONObject: params, options: [])
-            request.httpBody = data
-        }
-        request.allHTTPHeaderFields = headers
-        request.httpMethod = method.rawValue
-        return request
-    }
-}
-
-protocol APIClient {
-    var session: URLSession { get }
-}
-
-extension APIClient {
-    
-    typealias completionHandler = (Decodable?, ServiceErrorCode?) -> Void
-    
-    func fetch<T: Decodable>(with request: URLRequest, decodingType: T.Type, completionHandler completion: @escaping completionHandler) {
-            session.dataTask(with: request) { data, response, error in
-            
-            guard let data = data else {
-                completion(nil,.INVALID_INPUT)
-                return
-            }
-                
-            guard let httpResponse = response as? HTTPURLResponse else {
-                completion(nil, .SERVER_ERROR)
-                return
-            }
-                
-            if httpResponse.statusCode == 200 || httpResponse.statusCode == 204 {
-                do {
-                    let jsonModel = try JSONDecoder().decode(decodingType, from: data)
-                    completion(jsonModel, nil)
-                } catch {
-                    completion(nil, .NO_RESOURCEDATA)
-                }
-                
-            } else if httpResponse.statusCode == 205 {
-                completion(nil, .NO_DATA)
-                
-            } else {
-                completion(nil, .OTHER)
-            }
-        }.resume()
-    }
-}
-
 class WebService : APIClient {
     
     static let sharedInstance = WebService()
     private init() { }
     
-    let session = URLSession(configuration: .default)
+    var session : URLSession {
+       return URLSession(configuration: .default)
+    }
+    
 }
 
-//class TestRest : APIClient {
-//
-//    let session: URLSession
-//
-//    init(configuration: URLSessionConfiguration) {
-//        self.session = URLSession(configuration: configuration)
-//    }
-//
-//    convenience init() {
-//        self.init(configuration: .default)
-//    }
-//
-//    typealias completionHandler = (Result<Person, ServiceErrorCode>) -> Void
-//    var request = URLRequest(url: URL(string: "")!)
-//
-//    func startCalling(completion: @escaping completionHandler) {
-//        fetch(with: request, decode: { json -> Person? in
-//            guard let person = json as? Person else { return  nil }
-//            return person
-//        }, completion: completion)
-//    }
-//}
